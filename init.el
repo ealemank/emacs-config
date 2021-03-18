@@ -1,28 +1,71 @@
+;;; init.el --- My Emacs configuration.
+;;; Commentary:
+;;; Author: Enrique Aleman
+;;; Created on: 17 April 2021
+;;; Copyright (c) 2021 Enrique Aleman
+
+;; This file is not part of GNU Emacs.
+
+;;; License:
+
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the Do What The Fuck You Want to
+;; Public License, Version 2, which is included with this distribution.
+;; See the file LICENSE.txt
+
+;;; Code:
+
+;; Set up package
+
 (require 'package)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (when no-ssl
-    (warn "\
-Your version of Emacs does not support SSL connections,
-which is unsafe because it allows man-in-the-middle attacks.
-There are two things you can do about this warning:
-1. Install an Emacs version that does support SSL and be safe.
-2. Remove this warning from your init file so you won't see it again."))
-  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-  (when (< emacs-major-version 24)
-    ;; For important compatibility libraries like cl-lib
-    (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
-;;(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
+
+;; add archives
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+
 (package-initialize)
 
-;;load custom lisp functions
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-(load "custom_utils.el")
+;; Install 'use-package' if it is not installed.
+(when (not (package-installed-p 'use-package))
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+;; Use better defaults
+(setq-default
+ ;; Don't use the compiled code if its the older package.
+ load-prefer-newer t
+
+ ;; Do not show the startup message.
+ inhibit-startup-message t
+
+ ;; Do not put 'customize' config in init.el; give it another file.
+ custom-file "~/.emacs.d/custom-file.el"
+
+  ;; Do not create lockfiles.
+ create-lockfiles nil
+
+ ;; Don't use hard tabs
+ indent-tabs-mode nil
+
+  ;; Emacs can automatically create backup files. This tells Emacs to put all backups in
+ ;; ~/.emacs.d/backups. More info:
+ ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Backup-Files.html
+ backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+
+ ;; Do not autosave.
+ auto-save-default nil
+
+  ;; Allow commands to be run on minibuffers.
+ enable-recursive-minibuffers t
+
+ ;; Do not ring bell
+ ring-bell-function 'ignore)
+
+;; Load `custom-file` manually as we have modified the default path.
+(load-file custom-file)
+
+;; Delete whitespace just when a file is saved.
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;;set font size default to larger than usual
 (set-face-attribute 'default nil :height 150)
@@ -30,165 +73,91 @@ There are two things you can do about this warning:
 (add-to-list 'default-frame-alist '(height . 48))
 (add-to-list 'default-frame-alist '(width . 160))
 
-;;get rid of welcome screen
-(setq inhibit-startup-screen t)
-
-;;shell settings
-;;changing the tab for pcomplete
-;;this is due to compatibility with helm mode
-;;(add-hook 'shell-mode-hook 'pcomplete-shell-setup)
-;;(add-hook 'shell-mode-hook
-;;  (lambda ()
-;;    (define-key shell-mode-map "\t" 'pcomplete)))
-
-;;stop asking if you really want to kill buffer
-(setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
-;;set bash for shell.  Mac has a custom bash install from brew
-(if (file-exists-p "/usr/local/bin/bash")
-    (setq explicit-shell-file-name "/usr/local/bin/bash"))
-;;Loading default shells.  I always use them
-(shell "build_shell")
-(shell "temp_shell")
-
-;;Changing the term escape character
-(add-hook 'term-mode-hook
-  (lambda ()
-    ;; C-x is the prefix command, rather than C-c
-    (term-set-escape-char ?\C-x)
-    (define-key term-raw-map "\M-x" 'helm-M-x)
-    (define-key term-raw-map "\C-x\C-y" 'term-paste)
-    (define-key term-mode-map "\C-x\C-k" 'term-char-mode)
-    (define-key term-mode-map "\C-a" 'term-send-raw)))
-    
-;;vterm
-(setq vterm-term-environment-variable "eterm-color")
-
-;;backups to one place
-(setq backup-directory-alist '(("." . "~/.emacs.d/emacs-backup")))
-
-;;treats non-space characters as words
+;; make all words one
 (global-superword-mode 1)
+
+;; Make the command key behave as 'meta'
+(when (eq system-type 'darwin)
+  (setq mac-right-command-modifier 'meta))
+
+;; (when (eq system-type 'darwin)
+;;   (setq mac-command-modifier 'meta)
+;;   (setq mac-right-command-modifier 'hyper))
 
 ;;string rectangle to append first letter instead of replacing it
 (global-set-key (kbd "C-x r t") 'string-insert-rectangle)
 
-;;helm settings
-;;(setq helm-command-prefix-key "C-c h")
-;;Current helm command prefix-key is "C-x c"
-;;helm-mode seems to disrupt the shell buffers
-;;so currently disabled it.
-;;it can be enabled anytime to typing M-x helm-mode
-;;(helm-mode 1) 
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-x r b") 'helm-filtered-bookmarks)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "C-x b") 'helm-buffers-list)
-;;(global-set-key (kbd "C-h f") 'helm-describe-function)
-;;(global-set-key (kbd "C-h k") 'helm-describe-key)
-(global-set-key (kbd "C-<tab>") 'completion-at-point)
-
 ;;ibuffer much better than buffer list
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
-;;ace-jump-helm-line
-(eval-after-load "helm"
-  '(define-key helm-map (kbd "C-'") 'ace-jump-helm-line))
-
-;;Theme
-(load-theme 'spacemacs-dark t)
-
-;;pyenv mode unbind C-c C-s so that elpy can get it
-(eval-after-load "pyenv-mode"
-  '(define-key pyenv-mode-map (kbd "C-c C-s") nil))
-
-;;flycheck config
-(setq flycheck-python-pycompile-executable "~/.pyenv/versions/emacs/bin/python")
-(setq flycheck-python-flake8-executable "~/.pyenv/versions/emacs/bin/python")
-(setq flycheck-python-mypy-executable "~/.pyenv/versions/emacs/bin/mypy")
-(setq flycheck-python-pylint-executable "~/.pyenv/versions/emacs/bin/pylint")
-;;elpy config
-(setq elpy-rpc-virtualenv-path "~/.pyenv/versions/emacs")
-;;(setq elpy-rpc-virtualenv-path 'current)
-(setq elpy-rpc-python-command "~/.pyenv/versions/emacs/bin/python")
-(elpy-enable)
-(when (require 'flycheck nil t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
-
-;;Ace-Jump-Mode settings
-(define-key global-map (kbd "C-j") 'ace-jump-mode)
-(define-key global-map (kbd "C-c j") 'ace-jump-mode-pop-mark)
-
-;;projectile settings
-(projectile-mode)
-(helm-projectile-on)
-;;this line was added because tramp was kind of slow
-;;on ssh connections
-(setq projectile-mode-line "Projectile")
-(setq projectile-completion-system (quote helm))
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-
-;;tramp settings
-(setq password-cache-expiry nil)
-
-;;robot-mode
-(load "robot-mode.el")
-(add-to-list 'auto-mode-alist '("\\.robot\\'" . robot-mode))
-(add-to-list 'auto-mode-alist '("\\.jenkins\\'" . groovy-mode))
-(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
-
-;;Helm-Swoop
-(global-set-key (kbd "M-i") 'helm-swoop)
-
-;;Multiple-cursors
-(global-set-key (kbd "C-c m m") 'mc/edit-lines)
-(global-set-key (kbd "C-c m s") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-c m a") 'mc/mark-all-like-this)
-
-;;Expand-region
-(global-set-key (kbd "C-c e") 'er/expand-region)
-
-;;google-this settings
-(global-set-key (kbd "C-x g") 'google-this-mode-submap)
-
-;;Ace Window
-;;(global-set-key (kbd "C-x o") 'ace-window)
-;;(global-set-key (kbd "M-p") 'ace-window)
-
-;;change default window switches
-;;from: https://emacs.stackexchange.com/a/3471
+;; global key bindings
 (global-set-key (kbd "C-.") #'other-window)
 (global-set-key (kbd "C-,") #'prev-window)
 (defun prev-window ()
   (interactive)
   (other-window -1))
 
-;;Save settings for later use
-(desktop-save-mode 1)
-(savehist-mode 1)
-(add-to-list 'savehist-additional-variables 'kill-ring)
-;;(setq desktop-files-not-to-save "^$")
+;; ───────────────────── Additional packages and their configurations ─────────────────────
+(require 'use-package)
 
-;;dired settings.
-;; Remember to navigate files with a instead of enter key
-(put 'dired-find-alternate-file 'disabled nil)
+;; Add `:doc' support for use-package so that we can use it like what a doc-strings is for
+;; functions.
+(eval-and-compile
+  (add-to-list 'use-package-keywords :doc t)
+  (defun use-package-handler/:doc (name-symbol _keyword _docstring rest state)
+    "An identity handler for :doc.
+     Currently, the value for this keyword is being ignored.
+     This is done just to pass the compilation when :doc is included
 
-;;Org-mode settings
-(add-hook 'org-mode-hook
-          (lambda()
-            (local-unset-key (kbd "C-j"))))
+     Argument NAME-SYMBOL is the first argument to `use-package' in a declaration.
+     Argument KEYWORD here is simply :doc.
+     Argument DOCSTRING is the value supplied for :doc keyword.
+     Argument REST is the list of rest of the  keywords.
+     Argument STATE is maintained by `use-package' as it processes symbols."
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (forge flycheck pyenv-mode markdown-mode helm-descbinds dockerfile-mode docker-tramp eterm-256color vterm pcomplete-extension ox-gfm multishell groovy-mode ace-window imenu-list google-this expand-region multiple-cursors helm-swoop ace-jump-helm-line magit-gerrit magit spacemacs-theme helm-projectile elpy ace-jump-mode))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+    ;; just process the next keywords
+    (use-package-process-keywords name-symbol rest state)))
+
+;; ─────────────────────────────────── Generic packages ───────────────────────────────────
+(use-package recentf
+  :doc "Recent buffers in a new Emacs session"
+  :config
+  (setq recentf-auto-cleanup 'never
+        recentf-max-saved-items 1000
+        recentf-save-file (concat user-emacs-directory ".recentf"))
+  (recentf-mode t)
+  :delight)
+
+(use-package helm
+  :doc "interactive fuzzy matching on everything"
+  :ensure t
+  :bind (("M-x" . helm-M-x)
+         ("C-x C-f" . helm-find-files)
+         ("C-x b" . helm-buffers-list)
+         ("C-<tab>" . completion-at-point))
+  )
+
+(use-package ace-jump-mode
+  :doc "Jump around the visible buffer using 'Head Chars'"
+  :ensure t
+  :bind (("C-j" . ace-jump-mode)
+         ("C-c j" . 'ace-jump-mode-pop-mark))
+  :delight)
+
+(use-package ace-jump-helm-line
+  :doc "ace jump on the helm line"
+  :ensure t
+  :bind ("C-'" . ace-jump-helm-line)
+  )
+
+(use-package helm-swoop
+  :doc "like occur but with helm"
+  :ensure t
+  :bind ("M-i" . helm-swoop)
+  )
+
+(use-package magit
+  :doc "Git integration for Emacs"
+  :ensure t
+  :bind ("C-x g" . magit-status)
+  )
