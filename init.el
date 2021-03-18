@@ -71,7 +71,7 @@
 (set-face-attribute 'default nil :height 150)
 ;;initial window size
 (add-to-list 'default-frame-alist '(height . 48))
-(add-to-list 'default-frame-alist '(width . 160))
+(add-to-list 'default-frame-alist '(width . 100))
 
 ;; make all words one
 (global-superword-mode 1)
@@ -96,6 +96,15 @@
 (defun prev-window ()
   (interactive)
   (other-window -1))
+
+(setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
+
+;;set bash for shell.  Mac has a custom bash install from brew
+(if (file-exists-p "/opt/homebrew/bin/bash")
+    (setq explicit-shell-file-name "/opt/homebrew/bin/bash"))
+;;Loading default shells.  I always use them
+(shell "build_shell")
+(shell "temp_shell")
 
 ;; ───────────────────── Additional packages and their configurations ─────────────────────
 (require 'use-package)
@@ -160,4 +169,60 @@
   :doc "Git integration for Emacs"
   :ensure t
   :bind ("C-x g" . magit-status)
+  )
+
+(use-package projectile
+  :doc "Project navigation"
+  :ensure t
+  :config
+  ;; Use it everywhere
+  (projectile-mode t)
+  (setq projectile-mode-line "Projectile")
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  )
+
+(use-package helm-projectile
+  :doc "enable helm in projectile"
+  :ensure t
+  :config (helm-projectile-on)
+  )
+
+(use-package multiple-cursors
+  :doc "Multiple cursors for Emacs."
+  :ensure t
+  :bind (("C-c m m" . mc/edit-lines)
+         ("C-c m s" . mc/mark-next-like-this)
+         ("C-c m a" . mc/mark-all-like-this))
+  )
+
+(use-package expand-region
+  :doc "Expand text region for marking"
+  :ensure t
+  :bind ("C-c e" . er/expand-region)
+  )
+
+(use-package google-this
+  :doc "call google on a text"
+  :ensure t
+  )
+
+(use-package org
+  :doc "org mode settings"
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook
+            (lambda()
+              (local-unset-key (kbd "C-j"))))
+  )
+
+(use-package imenu-list
+  :doc "list functions in files"
+  :ensure t
+  )
+
+(use-package spacemacs-theme
+  :defer t
+  :init
+  (load-theme 'spacemacs-dark t)
   )
