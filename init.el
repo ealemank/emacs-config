@@ -6,13 +6,6 @@
 
 ;; This file is not part of GNU Emacs.
 
-;;; License:
-
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the Do What The Fuck You Want to
-;; Public License, Version 2, which is included with this distribution.
-;; See the file LICENSE.txt
-
 ;;; Code:
 
 ;; Set up package
@@ -70,8 +63,8 @@
 ;;set font size default to larger than usual
 (set-face-attribute 'default nil :height 150)
 ;;initial window size
-(add-to-list 'default-frame-alist '(height . 48))
-(add-to-list 'default-frame-alist '(width . 100))
+;;(add-to-list 'default-frame-alist '(height . 48))
+;;(add-to-list 'default-frame-alist '(width . 100))
 
 ;; make all words one
 (global-superword-mode 1)
@@ -100,8 +93,10 @@
 (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
 
 ;;set bash for shell.  Mac has a custom bash install from brew
-(if (file-exists-p "/opt/homebrew/bin/bash")
-    (setq explicit-shell-file-name "/opt/homebrew/bin/bash"))
+;;(if (file-exists-p "/opt/homebrew/bin/bash")
+;;    (setq-default explicit-shell-file-name "/opt/homebrew/bin/bash"))
+
+;;(setq-default shell-file-name "/opt/homebrew/bin/bash/bin/bash")
 ;;Loading default shells.  I always use them
 (shell "build_shell")
 (shell "temp_shell")
