@@ -138,6 +138,7 @@
   :bind (("M-x" . helm-M-x)
          ("C-x C-f" . helm-find-files)
          ("C-x b" . helm-buffers-list)
+         ("C-x r b" . helm-filtered-bookmarks)
          ("C-<tab>" . completion-at-point))
   )
 
@@ -199,6 +200,11 @@
 
 (use-package google-this
   :doc "call google on a text"
+  :ensure t
+  )
+
+(use-package yaml-mode
+  :doc "Major mode for editing YAML files"
   :ensure t
   )
 
