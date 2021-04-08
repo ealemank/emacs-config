@@ -222,6 +222,9 @@
   :ensure t
   )
 
+(use-package groovy-mode
+  :ensure t)
+
 (use-package spacemacs-theme
   :ensure t
   :defer t
