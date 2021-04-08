@@ -83,6 +83,9 @@
 ;;ibuffer much better than buffer list
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
+;;better bookmarks
+(global-set-key (kbd "C-x r b") 'helm-filtered-bookmarks)
+
 ;; global key bindings
 (global-set-key (kbd "C-.") #'other-window)
 (global-set-key (kbd "C-,") #'prev-window)
@@ -98,8 +101,8 @@
 
 ;;(setq-default shell-file-name "/opt/homebrew/bin/bash/bin/bash")
 ;;Loading default shells.  I always use them
-(shell "build_shell")
 (shell "temp_shell")
+(shell "build_shell")
 
 ;; ───────────────────── Additional packages and their configurations ─────────────────────
 (require 'use-package)
@@ -228,3 +231,21 @@
   :init
   (load-theme 'spacemacs-dark t)
   )
+
+(use-package company
+  :doc "need for elpy for some reason"
+  :ensure t
+  )
+
+(use-package pyenv-mode
+  :doc "python virtual environent"
+  :ensure t
+  )
+
+(use-package elpy
+  :ensure t
+  :defer t
+  :config
+  (setq elpy-rpc-virtualenv-path 'current)
+  :init
+  (advice-add 'python-mode :before 'elpy-enable))
