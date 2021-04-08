@@ -234,7 +234,70 @@
   :ensure t
   )
 
-(use-package pyenv-mode
-  :doc "python virtual environent"
+
+(use-package helm-company
+  :bind (:map company-mode-map
+              ("C-'" . helm-company)
+              :map company-active-map
+              ("C-'" . helm-company))
+  :ensure t)
+
+;; (use-package pyenv-mode
+;;   :doc "python virtual environent"
+;;   :ensure t
+;;   )
+
+(use-package pyenv-mode-auto
+  :doc "automatically switch pyenv mode"
   :ensure t
   )
+
+(use-package lsp-python-ms
+  :ensure t
+  :init (setq lsp-python-ms-auto-install-server t)
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-python-ms)
+                          (lsp))))  ; or lsp-deferred
+
+;; I have mixed results with lsp-pyright and pyenv
+;; lsp-python-ms seems to work right off the bat but its slower
+;; need to look into direnv solution for pyenv
+;; or pyvenv seems to be something
+;; (use-package lsp-pyright
+;;   :ensure t
+;;   :hook (python-mode . (lambda ()
+;;                          (require 'lsp-pyright)
+;;                          (lsp))))  ; or lsp-deferred
+
+
+(use-package hydra
+  :ensure t
+  :config (hydra-add-font-lock))
+
+(use-package origami
+  :ensure t
+  :bind ("C-c h o" . hydra-origami/body)
+  :config
+  (defhydra hydra-origami (:color red
+                                  :hint nil)
+    "
+_t_: toggle    _r_: redo    _p_: prev        _c_: close all
+_u_: undo      _n_: next    _o_: open all    _q_: quit
+"
+    ("t" origami-recursively-toggle-node)
+    ("u" origami-undo)
+    ("r" origami-redo)
+    ("p" origami-previous-fold)
+    ("n" origami-next-fold)
+    ("o" origami-open-all-nodes)
+    ("c" origami-close-all-nodes)
+    ("q" nil "Quit" :color blue))
+
+  (global-origami-mode))
+
+;; lsp-origami provides support for origami.el using language server protocol’s
+;; textDocument/foldingRange functionality.
+;; https://github.com/emacs-lsp/lsp-origami/
+;; (use-package lsp-origami
+;;   :ensure t
+;;   :hook ((lsp-after-open . lsp-origami-mode)))
