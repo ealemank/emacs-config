@@ -83,9 +83,6 @@
 ;;ibuffer much better than buffer list
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
-;;better bookmarks
-(global-set-key (kbd "C-x r b") 'helm-filtered-bookmarks)
-
 ;; global key bindings
 (global-set-key (kbd "C-.") #'other-window)
 (global-set-key (kbd "C-,") #'prev-window)
@@ -241,11 +238,3 @@
   :doc "python virtual environent"
   :ensure t
   )
-
-(use-package elpy
-  :ensure t
-  :defer t
-  :config
-  (setq elpy-rpc-virtualenv-path 'current)
-  :init
-  (advice-add 'python-mode :before 'elpy-enable))
