@@ -161,6 +161,12 @@
   :bind ("M-i" . helm-swoop)
   )
 
+(use-package helm-descbinds
+  :doc "describe key bindings"
+  :ensure t
+  :bind ("C-h b" . helm-descbinds)
+  )
+
 (use-package magit
   :doc "Git integration for Emacs"
   :ensure t
@@ -201,6 +207,7 @@
 (use-package google-this
   :doc "call google on a text"
   :ensure t
+  :bind ("C-M-g" . google-this)
   )
 
 (use-package yaml-mode
@@ -304,3 +311,7 @@ _u_: undo      _n_: next    _o_: open all    _q_: quit
 ;; (use-package lsp-origami
 ;;   :ensure t
 ;;   :hook ((lsp-after-open . lsp-origami-mode)))
+
+(use-package bash-completion
+  :ensure t
+  :config (bash-completion-setup))
