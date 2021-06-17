@@ -315,3 +315,18 @@ _u_: undo      _n_: next    _o_: open all    _q_: quit
 (use-package bash-completion
   :ensure t
   :config (bash-completion-setup))
+
+(use-package docker-tramp
+  :doc "access docker files via tramp"
+  :ensure t
+  )
+
+(use-package dockerfile-mode
+  :doc "major mode for editing dockerfiles"
+  :ensure t
+  )
+
+(use-package docker-compose-mode
+  :doc "major mode for editing docker compose files"
+  :ensure t
+  )
