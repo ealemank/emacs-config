@@ -215,13 +215,22 @@
   :ensure t
   )
 
+
+(use-package org-superstar
+  :ensure t
+  :config (org-superstar-configure-like-org-bullets)
+  )
+
 (use-package org
   :doc "org mode settings"
   :ensure t
   :config
   (add-hook 'org-mode-hook
             (lambda()
-              (local-unset-key (kbd "C-j"))))
+              (setq org-hide-emphasis-markers t)
+              (org-superstar-mode 1)
+              (local-unset-key (kbd "C-j")))
+            )
   )
 
 (use-package imenu-list
@@ -328,5 +337,15 @@ _u_: undo      _n_: next    _o_: open all    _q_: quit
 
 (use-package docker-compose-mode
   :doc "major mode for editing docker compose files"
+  :ensure t
+  )
+
+(use-package restclient
+  :doc "making rest apis from emacs"
+  :ensure t
+  )
+
+(use-package restclient-helm
+  :doc "helm interface to restclient"
   :ensure t
   )
