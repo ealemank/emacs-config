@@ -58,7 +58,7 @@
 (load-file custom-file)
 
 ;; Delete whitespace just when a file is saved.
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;;set font size default to larger than usual
 (set-face-attribute 'default nil :height 150)
@@ -91,6 +91,8 @@
   (other-window -1))
 
 (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
+
+(setq xref-prompt-for-identifier nil)
 
 ;;set bash for shell.  Mac has a custom bash install from brew
 ;;(if (file-exists-p "/opt/homebrew/bin/bash")
@@ -271,12 +273,31 @@
   :ensure t
   )
 
+(use-package flycheck
+  :ensure t)
+
+(use-package lsp-ui
+  :doc "lsp user interface"
+  :config
+  (setq lsp-prefer-flymake nil
+        lsp-ui-doc-enable nil
+        lsp-ui-sideline-enable nil
+        lsp-ui-sideline-show-symbol nil)
+  :ensure t)
+
+
 (use-package lsp-python-ms
   :ensure t
   :init (setq lsp-python-ms-auto-install-server t)
   :hook (python-mode . (lambda ()
                           (require 'lsp-python-ms)
                           (lsp))))  ; or lsp-deferred
+
+(use-package lsp-java
+  :ensure t
+  :config
+  (add-hook 'java-mode-hook #'lsp))
+
 
 ;; I have mixed results with lsp-pyright and pyenv
 ;; lsp-python-ms seems to work right off the bat but its slower
@@ -347,5 +368,15 @@ _u_: undo      _n_: next    _o_: open all    _q_: quit
 
 (use-package restclient-helm
   :doc "helm interface to restclient"
+  :ensure t
+  )
+
+(use-package vlf
+  :doc "very large files"
+  :ensure t
+  )
+
+(use-package logview
+  :doc "viewing logs locally"
   :ensure t
   )
