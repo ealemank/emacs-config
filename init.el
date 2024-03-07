@@ -263,15 +263,15 @@
               ("C-'" . helm-company))
   :ensure t)
 
-;; (use-package pyenv-mode
-;;   :doc "python virtual environent"
-;;   :ensure t
-;;   )
-
-(use-package pyenv-mode-auto
-  :doc "automatically switch pyenv mode"
+(use-package pyenv-mode
+  :doc "python virtual environent"
   :ensure t
   )
+
+;; (use-package pyenv-mode-auto
+;;   :doc "automatically switch pyenv mode"
+;;   :ensure t
+;;   )
 
 (use-package flycheck
   :ensure t)
@@ -346,10 +346,10 @@ _u_: undo      _n_: next    _o_: open all    _q_: quit
   :ensure t
   :config (bash-completion-setup))
 
-(use-package docker-tramp
-  :doc "access docker files via tramp"
-  :ensure t
-  )
+;; (use-package docker-tramp
+;;   :doc "access docker files via tramp"
+;;   :ensure t
+;;   )
 
 (use-package dockerfile-mode
   :doc "major mode for editing dockerfiles"
