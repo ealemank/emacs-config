@@ -32,7 +32,7 @@
  inhibit-startup-message t
 
  ;; Do not put 'customize' config in init.el; give it another file.
- custom-file "~/.emacs.d/custom-file.el"
+ custom-file "~/.emacs.d/custom_utils.el"
 
   ;; Do not create lockfiles.
  create-lockfiles nil
