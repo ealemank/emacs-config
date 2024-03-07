@@ -225,7 +225,14 @@
 
 (use-package org
   :doc "org mode settings"
+  :commands
+  org-babel-do-load-languages
   :ensure t
+  :init
+  (defun my-org-confirm-babel-evaluate (lang body)
+    "Don't confirm squat."
+    (not (member lang '("sh" "python" "emacs-lisp" "shell" "dot" "scheme"
+                        "elisp"))))
   :config
   (add-hook 'org-mode-hook
             (lambda()
@@ -233,6 +240,12 @@
               (org-superstar-mode 1)
               (local-unset-key (kbd "C-j")))
             )
+  (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+  (org-babel-do-load-languages 'org-babel-load-languages
+   '((shell      . t)
+     (python     . t)
+     (emacs-lisp . t)
+     (scheme     . t)))
   )
 
 (use-package imenu-list
